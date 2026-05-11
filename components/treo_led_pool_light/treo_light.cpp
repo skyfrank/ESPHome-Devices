@@ -18,16 +18,24 @@ void TreoPoolLightOutput::setup() {
 }
 
 void TreoPoolLightOutput::setup_state(light::LightState *state) {
-  auto *effect_slow = new TreoPoolLightEffect("Slow Change");    // NOLINT
-  auto *effect_white = new TreoPoolLightEffect("White");         // NOLINT
-  auto *effect_blue = new TreoPoolLightEffect("Blue");           // NOLINT
-  auto *effect_green = new TreoPoolLightEffect("Green");         // NOLINT
-  auto *effect_red = new TreoPoolLightEffect("Red");             // NOLINT
-  auto *effect_amber = new TreoPoolLightEffect("Amber");         // NOLINT
-  auto *effect_magenta = new TreoPoolLightEffect("Magenta");     // NOLINT
-  auto *effect_fast = new TreoPoolLightEffect("Fast Change");    // NOLINT
-  state->add_effects({effect_slow, effect_white, effect_blue, effect_green, effect_red,
-                      effect_amber, effect_magenta, effect_fast});
+  auto *evening_sea = new TreoPoolLightEffect("Evening Sea");       // NOLINT
+  auto *evening_rivers = new TreoPoolLightEffect("Evening Rivers"); // NOLINT
+  auto *riviera = new TreoPoolLightEffect("Riviera");           // NOLINT
+  auto *neutral_white = new TreoPoolLightEffect("Neutral White");         // NOLINT
+  auto *rainbow = new TreoPoolLightEffect("Rainbow");             // NOLINT
+  auto *river_of_colors = new TreoPoolLightEffect("River of Colors");         // NOLINT
+  auto *disco = new TreoPoolLightEffect("Disco");     // NOLINT
+  auto *full_colors = new TreoPoolLightEffect("Full Colors");    // NOLINT
+  auto *party = new TreoPoolLightEffect("Party");    // NOLINT
+  auto *sun_white = new TreoPoolLightEffect("Sun White");    // NOLINT
+  auto *effect_red = new TreoPoolLightEffect("Red");    // NOLINT
+  auto *effect_green = new TreoPoolLightEffect("Green");    // NOLINT
+  auto *effect_blue = new TreoPoolLightEffect("Blue");    // NOLINT
+  auto *effect_cyan = new TreoPoolLightEffect("Cyan");    // NOLINT
+  auto *effect_yellow = new TreoPoolLightEffect("Yellow");    // NOLINT
+  auto *effect_magenta = new TreoPoolLightEffect("Magenta");    // NOLINT
+  state->add_effects({evening_sea, evening_rivers, riviera, neutral_white, rainbow, river_of_colors, disco, full_colors, party, sun_white,
+                      effect_red, effect_green, effect_blue, effect_cyan, effect_yellow, effect_magenta});
   this->state_ = state;
 
   this->color_pref_ = this->state_->make_entity_preference<uint32_t>();
@@ -79,7 +87,7 @@ void TreoPoolLightOutput::color_change_off_() {
 void TreoPoolLightOutput::color_change_on_() {
   this->output_->set_state(true);
   int old_color = this->get_current_color_();
-  int new_color = old_color < 8 ? old_color + 1 : 1;
+  int new_color = old_color < 16 ? old_color + 1 : 1;
   this->set_current_color_(new_color);
   int target_color = get_target_color_();
   ESP_LOGV(TAG, "Color change step: current=%u, target=%u", new_color, target_color);
@@ -104,7 +112,7 @@ void TreoPoolLightOutput::next_color() {
   if (this->state_ != nullptr) {
     auto call = this->state_->turn_on();
     int current_color = this->get_current_color_();
-    call.set_effect(current_color < 8 ? current_color + 1 : 1);
+    call.set_effect(current_color < 16 ? current_color + 1 : 1);
     call.perform();
   }
 }
@@ -125,7 +133,7 @@ int TreoPoolLightOutput::get_target_color_() {
   if (this->state_ == nullptr)
     return this->get_current_color_();
   int idx = this->state_->get_current_effect_index();
-  if (idx >= 1 && idx <= 8) return idx;
+  if (idx >= 1 && idx <= 16) return idx;
   return this->get_current_color_();
 }
 
@@ -134,9 +142,9 @@ void TreoPoolLightOutput::color_reset() {
   // which sets the physical light back to color 1 and then update the color back to the "current" color.
   // The steps to accomplish this are:
   // * Ensure the light output is off
-  // * Wait for 5.5 seconds
+  // * Wait for 20 seconds
   // * Toggle the light on/off 3 times with a 250ms delay between each change
-  // * Wait for 5.5 seconds
+  // * Wait for 3 seconds
   // * Turn the light back on setting the color to the "current" color
   // Use the effect index from the state as the target color
   ESP_LOGI(TAG, "Starting color reset (target color: %u)", this->get_target_color_());
@@ -144,7 +152,7 @@ void TreoPoolLightOutput::color_reset() {
   this->is_changing_colors_ = true;
   this->output_->set_state(false);
 
-  this->set_timeout("COLOR_RESET_ON_1", 5500, [this]() {
+  this->set_timeout("COLOR_RESET_ON_1", 20000, [this]() {
     this->output_->set_state(true);
 
     this->set_timeout("COLOR_RESET_OFF_1", 250, [this]() {
