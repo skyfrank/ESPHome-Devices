@@ -11,7 +11,7 @@ TreoPoolLightOutput = treo_light_ns.class_("TreoPoolLightOutput", light.LightOut
 CONFIG_SCHEMA = light.BINARY_LIGHT_SCHEMA.extend(
     {
         cv.GenerateID(CONF_OUTPUT_ID): cv.declare_id(TreoPoolLightOutput),
-        cv.Required(CONF_OUTPUT): cv.use_id(output.OutputSwitch),
+        cv.Required(CONF_OUTPUT): cv.use_id(output.BinaryOutput),
     }
 )
 

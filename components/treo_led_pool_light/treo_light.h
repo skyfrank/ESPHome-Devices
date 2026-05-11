@@ -4,13 +4,13 @@
 #include "esphome/core/component.h"
 #include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/light/light_output.h"
-#include "esphome/components/output/switch/output_switch.h"
+#include "esphome/components/output/binary_output.h"
 
 namespace esphome::treo_light {
 
 class TreoPoolLightOutput : public light::LightOutput, public Component, public api::CustomAPIDevice {
  public:
-  void set_output(output::OutputSwitch *output) { output_ = output; }
+  void set_output(output::BinaryOutput *output) { output_ = output; }
   light::LightTraits get_traits() override;
   void setup() override;
   void dump_config() override;
@@ -27,7 +27,7 @@ class TreoPoolLightOutput : public light::LightOutput, public Component, public 
   void set_current_color_(uint8_t color);
   int get_target_color_();
 
-  output::OutputSwitch *output_ = nullptr;
+  output::BinaryOutput *output_ = nullptr;
   light::LightState *state_ = nullptr;
   ESPPreferenceObject color_pref_;
   uint8_t current_color_ = 1;
