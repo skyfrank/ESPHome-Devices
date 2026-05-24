@@ -118,7 +118,7 @@ void TreoPoolLightOutput::next_color() {
 }
 
 uint8_t TreoPoolLightOutput::get_current_color_() {
-  if (this->current_color_ < 1 || this->current_color_ > 8) {
+  if (this->current_color_ < 1 || this->current_color_ > 16) {
     set_current_color_(1);
   }
   return this->current_color_;
